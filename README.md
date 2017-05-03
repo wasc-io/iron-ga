@@ -1,40 +1,35 @@
-# start-google-analytics-tracker
+# iron-ga
 
-`start-google-analytics-tracker` is a Polymer Element for [Google Analytics Web Tracking](https://developers.google.com/analytics/devguides/collection/analyticsjs/), supports page and event tracking.
+`iron-ga` is a Polymer Element for [Google Analytics Web Tracking](https://developers.google.com/analytics/devguides/collection/analyticsjs/), supports page and event tracking.
 
-Script analytics.js is served from local `scripts` dir, because https://www.google-analytics.com/analytics.js have only 2 hours cache.
-
-You need download latest analytics.js file.
-
-```sh
-wget https://www.google-analytics.com/analytics.js -O scripts/analytics.js
-```
-
-Inspired by this repo https://github.com/matthewlawson/google-analytics-universal-tracker
-
-## Getting Started
+The element supports anonymizing the users IP, as required by the EU Dataprotection Law
 
 ### Installation
 
 ```sh
-bower install start-google-analytics-tracker --save
+bower install iron-ga --save
 ```
 
-### Usage
 
 #### Initialise
 
 ```html
-<link rel="import" href="bower_components/start-google-analytics-tracker/start-google-analytics-tracker.html">
+<link rel="import" href="bower_components/iron-ga/iron-ga.html">
 
-<start-google-analytics-tracker code="UA-XXXXX-Y"></start-google-analytics-tracker>
+<iron-ga code="UA-XXXXX-Y"></iron-ga>
 ```
 
 If you are using regular anchor links and not push-state links you are ready to go!
 
-If you have a Single Page Application that uses push-state, eg with `page.js` or `<app-router>` you will need to signal to the `start-google-analytics-tracker` element that the page has changed.
+If you have a Single Page Application that uses push-state, eg with `page.js` or `<app-router>` you will need to signal to the `iron-ga` element that the page has changed.
 
 The Page Change events are handled using iron-signals so you do not need to do any dom finding to trigger a page track.
+
+#### Anonymize
+````html
+<link rel="import" href="bower/components/iron-ga/iron-ga.html">
+<iron-ga code="UA-XXXXXX-Y" anonymize="true"></iron-ga>
+````
 
 #### Track a page Change
 
@@ -53,5 +48,5 @@ The Page Change events are handled using iron-signals so you do not need to do a
 To use [Google Analytics user id attribution](https://developers.google.com/analytics/devguides/collection/analyticsjs/user-id) set the user id property on the element:
 
 ```javascript
-    document.querySelector("start-google-analytics-tracker").userId = loggedInUserId;
+    document.querySelector("iron-ga").userId = loggedInUserId;
 ```

@@ -5,11 +5,15 @@ Polymer Element for Google Analytics Universal Web Tracking, supports page and e
 
 Initialise:
 
-    <start-google-analytics-tracker code="UA-XXXXX-Y"></start-google-analytics-tracker>
+    <iron-ga code="UA-XXXXX-Y"></iron-ga>
+
+Anonymize:
+    <iron-ga code="UA-XXXXX-Y" anonymize="true"></iron-ga> 
 
 Track an Event:
 
     this.fire('iron-signal', {name: 'track-event',data: {category: "messages",action: "send_text_message",label: "group",value: 1}});
+
 
 Track a page Change:
 
@@ -17,7 +21,7 @@ Track a page Change:
 
 To use Google Analytics user id attribution https://developers.google.com/analytics/devguides/collection/analyticsjs/user-id set the user id property on the element:
 
-    document.querySelector("start-google-analytics-tracker").userId = loggedInUserId;
+    document.querySelector("iron-ga").userId = loggedInUserId;
 -->
 <dom-module id="iron-ga">
     <template>
