@@ -19,7 +19,7 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
 
     document.querySelector("start-google-analytics-tracker").userId = loggedInUserId;
 -->
-<dom-module id="start-google-analytics-tracker">
+<dom-module id="iron-ga">
     <template>
         <iron-signals on-iron-signal-track-page="trackPage" on-iron-signal-track-event="trackEvent"></iron-signals>
     </template>
@@ -32,7 +32,7 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
 
     (function() {
         Polymer({
-            is: 'start-google-analytics-tracker',
+            is: 'iron-ga',
             properties: {
                 /**
                  * The Google analytics property id
