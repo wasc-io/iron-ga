@@ -1,10 +1,9 @@
 {
   "name": "iron-ga",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/wasc-io/iron-ga",
   "authors": [
-    "Start Polymer",
-    "Matthew Lawson <mattlaw1@gmail.com>",
+    "wasc GbR",
     "Nicolai Schmid <nicolai@nicolaischmid.de>"
   ],
   "description": "Polymer Element for Google Analytics Web Tracking, supports page and event tracking.",
