@@ -1,5 +1,4 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-signals/iron-signals.html">
 <!--
 Polymer Element for Google Analytics Universal Web Tracking, supports page and event tracking.
 
@@ -41,66 +40,67 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
         m.parentNode.insertBefore(a, m)
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-    (function () {
-        Polymer({
-            is: 'iron-ga',
-            properties: {
-                /**
-                 * The Google analytics property id
-                 */
-                code: {
-                    type: String
-                },
+    class IronGa extends Polymer.Element {
+        static get is() {
+            return 'iron-ga';
+        }
+
+        static get properties() {
+            return {
+                code: String,
                 anonymize: {
                     type: Boolean,
-                    reflectToAttribute: true,
                     value: false
                 },
-                /**
-                 * Optional user id, set this for a use authenticated with your service
-                 * https://developers.google.com/analytics/devguides/collection/analyticsjs/user-id
-                 */
                 userId: {
                     type: String,
                     notify: true
                 }
-            },
-            listeners: {
-                'track-event': 'trackEvent',
-                'track-page': 'trackPage',
-                'user-id-changed': 'userIDChanged'
-            },
-            ready: function () {
-                //console.log("setup GS for "+this.code);
-                ga('create', this.code, 'auto');
-                if (this.anonymize === true) {
-                    ga('set', 'anonymizeIP', true);
-                }
-                this.trackPage();
-            },
-            trackEvent: function (e) {
-                //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
-                //ga('send', 'event', 'category', 'action', {'nonInteraction': 1});
-                ga('send', 'event', {
-                    'eventCategory': e.detail.category,
-                    'eventAction': e.detail.action,
-                    'eventLabel': e.detail.label,
-                    'eventValue': e.detail.value,
-                    'hitCallback': function() {
-                        console.log('Data reported to Google Analytics');
-                    }
-                });
-            },
-            trackPage: function (e) {
-                //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
-                if (e != undefined && e.detail.path !== undefined) {
-                    ga('set', 'page', e.detail.path);
-                }
-                ga('send', 'pageview');
-            },
-            userIDChanged: function (e) {
-                ga('set', '&uid', this.userId);
             }
-        });
-    })();
+        }
+
+        ready() {
+            super.ready();
+            
+            // Create GA Instance
+            ga('create', this.code, 'auto');
+
+            // Set anonymize IP for GA
+            if (this.anonymize === true) {
+                ga('set', 'anonymizeIP', true);
+            }
+
+            // Setup event listeners for custom events
+            window.addEventListener('track-event', this._trackEvent(event));
+            window.addEventListener('track-page', this._trackPage(event));
+            window.addEventListener('user-id-changed', this._userIDChanged(event));
+        }
+
+        _trackEvent(event) {
+            //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
+            ga('send', 'event', {
+                'eventCategory': event.detail.category,
+                'eventAction': event.detail.action,
+                'eventLabel': event.detail.label,
+                'eventValue': event.detail.value,
+                'hitCallback': function () {
+                    console.log('Data reported to Google Analytics');
+                }
+            });
+        };
+
+        _trackPage(event) {
+            //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
+            if (event != undefined && event.detail.path !== undefined) {
+                ga('set', 'page', event.detail.path);
+            }
+            ga('send', 'pageview');
+        };
+
+        _userIDChanged(event) {
+            ga('set', '&uid', this.userId);
+        };
+    }
+
+    window.customElements.define(IronGa.is, IronGa);
 </script>
