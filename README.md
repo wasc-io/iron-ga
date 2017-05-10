@@ -21,9 +21,9 @@ bower install iron-ga --save
 
 If you are using regular anchor links and not push-state links you are ready to go!
 
-If you have a Single Page Application that uses push-state, eg with `page.js` or `<app-router>` you will need to signal to the `iron-ga` element that the page has changed.
+If you have a Single Page Application that uses push-state, eg with `page.js` or `<app-router>` you will need to dispatch a custom event to the element that the page has changed.
 
-The Page Change events are handled using iron-signals so you do not need to do any dom finding to trigger a page track.
+The Page Change events are handled using CustomEvents so you do not need to do any dom finding to trigger a page track.
 
 #### Anonymize
 ````html
@@ -34,13 +34,23 @@ The Page Change events are handled using iron-signals so you do not need to do a
 #### Track a page Change
 
 ```javascript
-    this.fire('iron-signal', {name: 'track-page', data: { path: "/about.html" } });
+    this.dispatchEvent(new CustomEvent('track-page', {
+        detail: {
+            path: '/about.html'
+        }
+    }));
 ```
 
 #### Track an Event
 
 ```javascript
-    this.fire('iron-signal', {name: 'track-event',data: {category: "messages",action: "send_text_message",label: "group",value: 1}});
+    this.dispatchEvent(new CustomEvent('track-event', {
+        detail: {
+            category: 'messages',
+            action: 'send_text_message',
+            label: 'group',
+            value: 1
+        }}));
 ```
 
 #### User id attribution
