@@ -81,7 +81,15 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
             trackEvent: function (e) {
                 //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
                 //ga('send', 'event', 'category', 'action', {'nonInteraction': 1});
-                ga('send', 'event', e.detail.category, e.detail.action, e.detail.label, e.detail.value);
+                ga('send', 'event', {
+                    'eventCategory': e.detail.category,
+                    'eventAction': e.detail.action,
+                    'eventLabel': e.detail.label,
+                    'eventValue': e.detail.value,
+                    'hitCallback': function() {
+                        console.log('Data reported to Google Analytics');
+                    }
+                });
             },
             trackPage: function (e) {
                 //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
