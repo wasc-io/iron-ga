@@ -19,7 +19,7 @@
     "type": "git",
     "url": "git://github.com/wasc-io/iron-ga.git"
   },
-  "license": "BSD-2-Clause",
+  "license": "BSD-3-Clause",
   "ignore": [
     "**/.*",
     "node_modules",
