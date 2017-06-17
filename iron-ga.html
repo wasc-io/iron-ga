@@ -65,7 +65,7 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
 
         ready() {
             super.ready();
-            
+
             // Create GA Instance
             ga('create', this.code, 'auto');
 
@@ -76,29 +76,29 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
 
             // Setup event listeners for custom events
             window.addEventListener('track-event', this._trackEvent(event));
-            window.addEventListener('track-page', this._trackPage(event));
+            window.addEventListener('track-page', this._trackEvent(event));
             window.addEventListener('user-id-changed', this._userIDChanged(event));
         }
 
         _trackEvent(event) {
-            //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
-            ga('send', 'event', {
-                'eventCategory': event.detail.category,
-                'eventAction': event.detail.action,
-                'eventLabel': event.detail.label,
-                'eventValue': event.detail.value,
-                'hitCallback': function () {
-                    console.log('Data reported to Google Analytics');
+            if (event !== null) {
+                if (event.detail.path != null) {
+                    //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
+                    ga('set', 'page', event.detail.path);
+                    ga('send', 'pageview');
+                } else {
+                    //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
+                    ga('send', 'event', {
+                        'eventCategory': event.detail.category,
+                        'eventAction': event.detail.action,
+                        'eventLabel': event.detail.label,
+                        'eventValue': event.detail.value,
+                        'hitCallback': function () {
+                            console.log('Data reported to Google Analytics');
+                        }
+                    });
                 }
-            });
-        };
-
-        _trackPage(event) {
-            //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
-            if (event != undefined && event.detail.path !== undefined) {
-                ga('set', 'page', event.detail.path);
             }
-            ga('send', 'pageview');
         };
 
         _userIDChanged(event) {
@@ -107,4 +107,5 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
     }
 
     window.customElements.define(IronGa.is, IronGa);
+
 </script>
