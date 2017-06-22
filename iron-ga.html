@@ -74,36 +74,42 @@ To use Google Analytics user id attribution https://developers.google.com/analyt
                 ga('set', 'anonymizeIP', true);
             }
 
-            // Setup event listeners for custom events
-            window.addEventListener('track-event', this._trackEvent(event));
-            window.addEventListener('track-page', this._trackEvent(event));
-            window.addEventListener('user-id-changed', this._userIDChanged(event));
-        }
-
-        _trackEvent(event) {
-            if (event !== null) {
-                if (event.detail.path != null) {
-                    //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
-                    ga('set', 'page', event.detail.path);
-                    ga('send', 'pageview');
-                } else {
-                    //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
-                    ga('send', 'event', {
-                        'eventCategory': event.detail.category,
-                        'eventAction': event.detail.action,
-                        'eventLabel': event.detail.label,
-                        'eventValue': event.detail.value,
-                        'hitCallback': function () {
-                            console.log('Data reported to Google Analytics');
-                        }
-                    });
+            window.addEventListener('track-event', (event) => {
+                //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
+                // Error handling
+                if (event.detail.category == null) {
+                    console.error('You must provide an event category for tracking');
+                    return;
                 }
-            }
-        };
+                if (event.detail.eventAction == null) {
+                    console.error('You must provide an event action for tracking');
+                    return;
+                }
 
-        _userIDChanged(event) {
-            ga('set', '&uid', this.userId);
-        };
+                // Reporting to GA
+                ga('send', 'event', {
+                    'eventCategory': event.detail.category,
+                    'eventAction': event.detail.action,
+                    'eventLabel': event.detail.label || '',
+                    'eventValue': event.detail.value || '',
+                    'hitCallback': function () {
+                        console.log('Data reported to Google Analytics');
+                    }
+                });
+            });
+
+            // Track page changes
+            document.addEventListener('track-page', (event) => {
+                //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
+                ga('set', 'page', event.detail.path);
+                ga('send', 'pageview');
+            });
+
+            // Track user id changes
+            window.addEventListener('user-id-changed', (event) => {
+                ga('set', '&uid', this.userId);
+            });
+        }
     }
 
     window.customElements.define(IronGa.is, IronGa);
