@@ -5,7 +5,7 @@
     "wasc GbR",
     "Nicolai Schmid <nicolai@nicolaischmid.de>"
   ],
-  "description": "Polymer Element for Google Analytics Web Tracking, supports page and event tracking.",
+  "description": "A simple Webcomponent for analyzing your traffic with Google Analytics 📊",
   "main": "iron-ga.html",
   "keywords": [
     "web-components",
