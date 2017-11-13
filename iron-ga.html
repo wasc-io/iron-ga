@@ -4,107 +4,135 @@ This code may only be used under the BSD style license found at https://wasc-io.
 -->
 <link rel="import" href="../polymer/polymer.html">
 <!--
-Polymer Element for Google Analytics Universal Web Tracking, supports page and event tracking.
-
-Initialise:
+A simple Webcomponent for analyzing your traffic with Google Analytics 📊
 
     <iron-ga code="UA-XXXXX-Y"></iron-ga>
 
-Anonymize:
-    <iron-ga code="UA-XXXXX-Y" anonymize="true"></iron-ga> 
+To track a page change fire the `track-page` event:
+    
+    this.dispatchEvent(new CustomEvent('track-page', {
+        composed: true,
+        bubbles: true,
+        detail: {
+            page: `/about`
+        },
+    }));
 
-Track an Event:
+To track a custom event fire the `track-event` event:
 
-    this.fire('iron-signal', {name: 'track-event',data: {category: "messages",action: "send_text_message",label: "group",value: 1}});
+    this.dispatchEvent(new CustomEvent('track-event', {
+        composed: true,
+        bubbles: true,
+        detail: {
+            category: 'messages',
+            action: 'send_text_message',
+            label:' group',
+            value: 1,
+        },
+    }));
 
+To use the Google Analytics user id attribution https://developers.google.com/analytics/devguides/collection/analyticsjs/user-id set the user id property:
 
-Track a page Change:
+    <iron-ga code="UA-XXXXX-Y" id="ironGa"></iron-ga>
 
-    this.fire('iron-signal', {name: 'track-page', data: { path: "/about.html" } });
+    <script>
+        this.$.ironGa.userId = loggedInUserId;
+    </script>
 
-To use Google Analytics user id attribution https://developers.google.com/analytics/devguides/collection/analyticsjs/user-id set the user id property on the element:
-
-    document.querySelector("iron-ga").userId = loggedInUserId;
+@polymer
+@customElement
 -->
+
+
 <dom-module id="iron-ga">
     <template>
-        <iron-signals on-iron-signal-track-page="trackPage" on-iron-signal-track-event="trackEvent"></iron-signals>
     </template>
+    <script>
+        // Google Analytics
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName('link')[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        class IronGa extends Polymer.Element {
+            static get is() {
+                return 'iron-ga';
+            }
+
+            static get properties() {
+                return {
+                    /** The Google Analytics Tracking Code */
+                    code: String,
+
+                    /** Wether the anonymize IP flag should be send to Google Analytics */
+                    anonymize: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /** The userId for the Google Analytics user id attribution */
+                    userId: {
+                        type: String,
+                        notify: true
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                // Create GA Instance
+                ga('create', this.code, 'auto');
+
+                // Set anonymize IP for GA
+                if (this.anonymize) {
+                    ga('set', 'anonymizeIP', true);
+                }
+
+                window.addEventListener('track-event', (event) => {
+                    //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
+                    // Error handling
+                    if (event.detail.category == null) {
+                        console.error('You must provide an event category for tracking');
+                        return;
+                    }
+                    if (event.detail.action == null) {
+                        console.error('You must provide an event action for tracking');
+                        return;
+                    }
+
+                    // Reporting to GA
+                    ga('send', 'event', {
+                        'eventCategory': event.detail.category,
+                        'eventAction': event.detail.action,
+                        'eventLabel': event.detail.label || '',
+                        'eventValue': event.detail.value || '',
+                        'hitCallback': function () {
+                            console.log('Data reported to Google Analytics');
+                        }
+                    });
+                });
+
+                // Track page changes
+                document.addEventListener('track-page', (event) => {
+                    // Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
+                    ga('set', 'page', event.detail.path);
+                    ga('send', 'pageview');
+                });
+
+                // Track user id changes
+                window.addEventListener('user-id-changed', (event) => {
+                    ga('set', '&uid', this.userId);
+                });
+            }
+        }
+
+        window.customElements.define(IronGa.is, IronGa);
+    </script>
 </dom-module>
-<script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-            m = s.getElementsByTagName('link')[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-    class IronGa extends Polymer.Element {
-        static get is() {
-            return 'iron-ga';
-        }
-
-        static get properties() {
-            return {
-                code: String,
-                anonymize: {
-                    type: Boolean,
-                    value: false
-                },
-                userId: {
-                    type: String,
-                    notify: true
-                }
-            }
-        }
-
-        ready() {
-            super.ready();
-            
-            // Create GA Instance
-            ga('create', this.code, 'auto');
-
-            // Set anonymize IP for GA
-            if (this.anonymize === true) {
-                ga('set', 'anonymizeIP', true);
-            }
-
-            // Setup event listeners for custom events
-            window.addEventListener('track-event', this._trackEvent(event));
-            window.addEventListener('track-page', this._trackPage(event));
-            window.addEventListener('user-id-changed', this._userIDChanged(event));
-        }
-
-        _trackEvent(event) {
-            //Add support for a non-interactin even that does not effect bounce rates - eg things that happen after a timeout
-            ga('send', 'event', {
-                'eventCategory': event.detail.category,
-                'eventAction': event.detail.action,
-                'eventLabel': event.detail.label,
-                'eventValue': event.detail.value,
-                'hitCallback': function () {
-                    console.log('Data reported to Google Analytics');
-                }
-            });
-        };
-
-        _trackPage(event) {
-            //Use set param, this way if we then send a subsequent event on the page it will be correctly associated with the same page
-            if (event != undefined && event.detail.path !== undefined) {
-                ga('set', 'page', event.detail.path);
-            }
-            ga('send', 'pageview');
-        };
-
-        _userIDChanged(event) {
-            ga('set', '&uid', this.userId);
-        };
-    }
-
-    window.customElements.define(IronGa.is, IronGa);
-</script>

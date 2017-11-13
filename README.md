@@ -35,21 +35,26 @@ The Page Change events are handled using CustomEvents so you do not need to do a
 
 ```javascript
     this.dispatchEvent(new CustomEvent('track-page', {
+        composed: true,
+        bubbles: true,
         detail: {
-            path: '/about.html'
+            path: '/about'
         }
     }));
 ```
 
-#### Track an Event
+#### Track a custom Event
+Pass the category and the action as event details. See [Google Developers](https://developers.google.com/analytics/devguides/collection/analyticsjs/events) for more information.
 
 ```javascript
     this.dispatchEvent(new CustomEvent('track-event', {
+        composed: true,
+        bubbles: true,
         detail: {
             category: 'messages',
             action: 'send_text_message',
-            label: 'group',
-            value: 1
+            label: 'group', // Optional
+            value: 1 // Optional
         }}));
 ```
 

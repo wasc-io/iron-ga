@@ -1,12 +1,11 @@
 {
   "name": "iron-ga",
-  "version": "2.0.0",
   "homepage": "https://github.com/wasc-io/iron-ga",
   "authors": [
     "wasc GbR",
     "Nicolai Schmid <nicolai@nicolaischmid.de>"
   ],
-  "description": "Polymer Element for Google Analytics Web Tracking, supports page and event tracking.",
+  "description": "A simple Webcomponent for analyzing your traffic with Google Analytics 📊",
   "main": "iron-ga.html",
   "keywords": [
     "web-components",
@@ -28,11 +27,17 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0-rc.1",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.4"
+    "polymer": "Polymer/polymer#^2.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "polymerelements/iron-component-page#^3.0.0",
+    "iron-demo-helpers": "polymerelements/iron-demo-helpers#^2.0.0",
+    "iron-test-helpers": "polymerelements/iron-test-helpers#^2.0.0",
+    "test-fixture": "polymerelements/test-fixture#^2.0.1",
+    "web-component-tester": "polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.1"
   },
   "resolutions": {
-    "polymer": "^2.0.0-rc.7",
-    "webcomponentsjs": "^v1.0.0-rc.5"
+    "test-fixture": "^2.0.1"
   }
 }
