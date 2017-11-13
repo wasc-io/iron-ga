@@ -28,7 +28,7 @@ The Page Change events are handled using CustomEvents so you do not need to do a
 #### Anonymize
 ````html
 <link rel="import" href="bower/components/iron-ga/iron-ga.html">
-<iron-ga code="UA-XXXXXX-Y" anonymize="true"></iron-ga>
+<iron-ga code="UA-XXXXXX-Y" anonymize"></iron-ga>
 ````
 
 #### Track a page Change
