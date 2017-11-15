@@ -39,6 +39,8 @@ To use the Google Analytics user id attribution https://developers.google.com/an
         this.$.ironGa.userId = loggedInUserId;
     </script>
 
+Enable debug logging, by setting `window.debug` to true
+
 @polymer
 @customElement
 -->
@@ -109,12 +111,14 @@ To use the Google Analytics user id attribution https://developers.google.com/an
 
                     // Reporting to GA
                     ga('send', 'event', {
-                        'eventCategory': event.detail.category,
-                        'eventAction': event.detail.action,
-                        'eventLabel': event.detail.label || '',
-                        'eventValue': event.detail.value || '',
-                        'hitCallback': function () {
-                            console.log('Data reported to Google Analytics');
+                        eventCategory: event.detail.category,
+                        eventAction: event.detail.action,
+                        eventLabel: event.detail.label,
+                        eventValue: event.detail.value,
+                        hitCallback: () => {
+                            if (window.debug) {
+                                console.log('Data reported to Google Analytics');
+                            }
                         }
                     });
                 });
