@@ -114,18 +114,21 @@ Enable debug logging, by setting `window.debug` to true
                         return;
                     }
 
-                    // Reporting to GA
-                    ga('send', 'event', {
+                    const eventData = {
                         eventCategory: event.detail.category,
                         eventAction: event.detail.action,
                         eventLabel: event.detail.label,
                         eventValue: event.detail.value,
+                    };
+
+                    // Reporting to GA
+                    ga('send', 'event', Object.assign(eventData, {
                         hitCallback: () => {
                             if (this.log) {
-                                console.log('Data reported to Google Analytics');
+                                console.log('Data[track-event] reported to Google Analytics', eventData);
                             }
                         }
-                    });
+                    }));
                 });
 
                 // Track page changes
@@ -135,7 +138,7 @@ Enable debug logging, by setting `window.debug` to true
                     ga('send', 'pageview', {
                         hitCallback: () => {
                             if (this.log) {
-                                console.log('Data reported to Google Analytics');
+                                console.log('Data[track-page] reported to Google Analytics', event.detail.path);
                             }
                         }
                     });
